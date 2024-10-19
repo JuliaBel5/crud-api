@@ -1,7 +1,6 @@
 import http from "http";
 import { config } from "dotenv";
-import { parse } from "url";
-import { requestListener } from "./routes";
+import { requestListener } from "./routes/routes";
 
 config();
 

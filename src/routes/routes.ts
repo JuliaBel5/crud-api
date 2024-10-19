@@ -6,8 +6,8 @@ import {
   createUser,
   updateUser,
   deleteUser,
-} from "./users";
-import { handleErrors } from "./errors";
+} from "../users";
+import { handleErrors } from "../middleware/errors";
 
 export const requestListener = (req: IncomingMessage, res: ServerResponse) => {
   const { method, url } = req;
