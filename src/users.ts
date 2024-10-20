@@ -34,8 +34,10 @@ const syncUsersWithMaster = () => {
 export const getAllUsers = async () => {
   if (isMultiMode) {
     return await syncUsersWithMaster();
+  } else {
+    console.log("Текущий список пользователей:", users);
+    return users;
   }
-  return users;
 };
 
 export const getUserById = (id: string) => {
@@ -56,7 +58,7 @@ export const createUser = (
 ) => {
   const newUser = { id: uuidv4(), username, age, hobbies };
   users.push(newUser);
-  console.log("Создан новый пользователь:", newUser);
+  console.log("Создан новый пользователь:", users);
 
   if (isMultiMode) {
     console.log("Отправка обновления пользователям...");

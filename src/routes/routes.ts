@@ -10,14 +10,19 @@ import {
 import { handleErrors } from "../middleware/errors";
 import { isValidUserId } from "../utils";
 
-export const requestListener = (req: IncomingMessage, res: ServerResponse) => {
+export const requestListener = async (
+  req: IncomingMessage,
+  res: ServerResponse
+) => {
   const { method, url } = req;
   const parsedUrl = parse(url!, true);
   const userId = parsedUrl.pathname?.split("/").pop();
   try {
     if (parsedUrl.pathname === "/api/users" && method === "GET") {
       res.writeHead(200, { "Content-Type": "application/json" });
-      res.end(JSON.stringify(getAllUsers()));
+      const users = await getAllUsers();
+      console.log("Полученный список пользователей:", users);
+      res.end(JSON.stringify({ success: true, users }));
     } else if (
       method === "GET" &&
       parsedUrl.pathname?.startsWith("/api/users/")
