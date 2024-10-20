@@ -1,5 +1,5 @@
-import { server } from "../server";
 import request from "supertest";
+import { server } from "../server";
 
 let createdUserId: string;
 const newUser = {
