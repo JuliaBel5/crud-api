@@ -2,13 +2,13 @@
   "name": "crud-api",
   "version": "1.0.0",
   "description": "",
-  "main": "server.ts",
+  "main": "server.js",
   "type": "module",
    "scripts": {
     "test": "jest",
     "build": "tsc",
     "start:dev": "cross-env NODE_ENV=development tsx src/server.ts",
-    "start:prod": "cross-env NODE_ENV=production node dist/index.js",
+    "start:prod": "npm run build && tsx dist/server.js",
     "start:multi": "cross-env NODE_ENV=development MULTI_MODE=true tsx src/cluster.ts",
     "lint": "eslint \"src/**/*.ts\"",
     "format": "prettier --write \"src/**/*.ts\""
