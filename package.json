@@ -10,7 +10,8 @@
     "start:dev": "cross-env NODE_ENV=development tsx src/server.ts",
     "start:prod": "cross-env NODE_ENV=production node dist/index.js",
     "start:multi": "cross-env NODE_ENV=production MULTI_MODE=true tsx src/cluster.ts",
-    "lint": "eslint \"src/**/*.ts\""
+    "lint": "eslint \"src/**/*.ts\"",
+     "format": "prettier --write \"src/**/*.ts\""
   },
   "keywords": [],
   "author": "",

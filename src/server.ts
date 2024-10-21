@@ -1,6 +1,6 @@
-import { createServer } from "http";
-import { requestListener } from "./routes/routes";
-import * as dotenv from "dotenv";
+import { createServer } from 'http';
+import { requestListener } from './routes/routes';
+import * as dotenv from 'dotenv';
 
 dotenv.config();
 

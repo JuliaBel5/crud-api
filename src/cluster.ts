@@ -1,18 +1,18 @@
-import cluster, { Worker } from "node:cluster";
-import { availableParallelism } from "node:os";
+import cluster, { Worker } from 'node:cluster';
+import { availableParallelism } from 'node:os';
 import {
   createServer,
   IncomingMessage,
   request as httpRequest,
   ServerResponse,
-} from "http";
-import * as dotenv from "dotenv";
-import { requestListener } from "./routes/routes";
-import { User } from "./users";
+} from 'http';
+import * as dotenv from 'dotenv';
+import { requestListener } from './routes/routes';
+import { User } from './users';
 
 dotenv.config();
 
-const PORT = parseInt(process.env.PORT || "4000", 10);
+const PORT = parseInt(process.env.PORT || '4000', 10);
 const numCPUs = availableParallelism();
 let currentWorkerIndex = 0;
 
@@ -23,7 +23,6 @@ interface WorkerMessage {
   payload?: any;
 }
 
- 
 const broadcastToWorkers = (action: string, payload: any) => {
   console.log(
     `Отправляем сообщение воркерам: action=${action}, payload=`,
@@ -34,35 +33,35 @@ const broadcastToWorkers = (action: string, payload: any) => {
     worker?.send({ action, payload });
   });
 };
- 
+
 const handleWorkerMessages = (worker: Worker) => {
-  worker.on("message", (msg: WorkerMessage) => {
+  worker.on('message', (msg: WorkerMessage) => {
     const { action, payload } = msg;
 
     switch (action) {
-      case "GET_DB":
-        worker.send({ action: "DB_DATA", payload: inMemoryDatabase });
+      case 'GET_DB':
+        worker.send({ action: 'DB_DATA', payload: inMemoryDatabase });
         break;
-      case "USER_CREATED":
-        console.log("Пользователь создан:", payload);
+      case 'USER_CREATED':
+        console.log('Пользователь создан:', payload);
         inMemoryDatabase[payload.id] = payload;
-        broadcastToWorkers("DB_DATA", inMemoryDatabase);
+        broadcastToWorkers('DB_DATA', inMemoryDatabase);
         break;
 
-      case "UPDATE_DB":
-        console.log("Обновление базы данных:", payload);
+      case 'UPDATE_DB':
+        console.log('Обновление базы данных:', payload);
 
         inMemoryDatabase[payload.id] = {
           ...inMemoryDatabase[payload.id],
           ...payload,
         };
 
-        broadcastToWorkers("DB_DATA", inMemoryDatabase);
+        broadcastToWorkers('DB_DATA', inMemoryDatabase);
         break;
-      case "DELETE_USER":
-        console.log("Удаление пользователя:", payload);
+      case 'DELETE_USER':
+        console.log('Удаление пользователя:', payload);
         delete inMemoryDatabase[payload];
-        broadcastToWorkers("DB_DATA", inMemoryDatabase);
+        broadcastToWorkers('DB_DATA', inMemoryDatabase);
         break;
     }
   });
@@ -73,7 +72,7 @@ if (cluster.isPrimary) {
     const worker = cluster.fork();
     handleWorkerMessages(worker);
 
-    worker.on("exit", (worker: Worker, code: number, signal: string | null) => {
+    worker.on('exit', (worker: Worker, code: number, signal: string | null) => {
       console.log(
         `Воркер ${worker.process.pid} завершился с кодом ${code} и сигналом ${signal}. Перезапускаем...`
       );
@@ -87,7 +86,7 @@ if (cluster.isPrimary) {
 
     if (workers.length === 0) {
       res.writeHead(500);
-      return res.end("Нет доступных воркеров");
+      return res.end('Нет доступных воркеров');
     }
 
     console.log(`Балансировка запроса: ${req.method} ${req.url}`);
@@ -96,7 +95,7 @@ if (cluster.isPrimary) {
     currentWorkerIndex++;
 
     const options = {
-      hostname: "localhost",
+      hostname: 'localhost',
       port: PORT + (worker?.id || 0),
       path: req.url,
       method: req.method,
@@ -113,10 +112,10 @@ if (cluster.isPrimary) {
 
     req.pipe(proxy, { end: true });
 
-    proxy.on("error", (err) => {
+    proxy.on('error', (err) => {
       console.error(`Ошибка при проксировании запроса: ${err.message}`);
       res.writeHead(500);
-      res.end("Что-то пошло не так с запросом.");
+      res.end('Что-то пошло не так с запросом.');
     });
   }).listen(PORT, () => {
     console.log(`Балансировщик запущен на http://localhost:${PORT}`);
@@ -133,34 +132,34 @@ if (cluster.isPrimary) {
     console.log(`Воркер ${process.pid} слушает на порту ${workerPort}`);
   });
 
-  process.on("message", (msg: WorkerMessage) => {
+  process.on('message', (msg: WorkerMessage) => {
     const { action, payload } = msg;
 
-    if (action === "DB_DATA") {
+    if (action === 'DB_DATA') {
       Object.assign(inMemoryDatabase, payload);
     }
 
-    if (action === "UPDATE_DB") {
+    if (action === 'UPDATE_DB') {
       if (payload && payload.id) {
         console.log(`Updating user in memory: ${payload.id}`);
         inMemoryDatabase[payload.id] = payload;
         console.log(`Worker ${process.pid} updated user ${payload.id}`);
 
-        broadcastToWorkers("DB_DATA", inMemoryDatabase);
+        broadcastToWorkers('DB_DATA', inMemoryDatabase);
       } else {
-        console.error("No valid payload received for update.");
+        console.error('No valid payload received for update.');
       }
     }
 
-    if (action === "DELETE_USER") {
+    if (action === 'DELETE_USER') {
       if (payload) {
         console.log(`Deleting user in memory: ${payload}`);
         delete inMemoryDatabase[payload];
         console.log(`Worker ${process.pid} deleted user ${payload}`);
 
-        broadcastToWorkers("DB_DATA", inMemoryDatabase);
+        broadcastToWorkers('DB_DATA', inMemoryDatabase);
       } else {
-        console.error("No valid payload received for deletion.");
+        console.error('No valid payload received for deletion.');
       }
     }
   });

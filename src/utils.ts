@@ -1,3 +1,3 @@
-import { validate as isUuid } from "uuid";
+import { validate as isUuid } from 'uuid';
 
 export const isValidUserId = (id: string): boolean => isUuid(id);
