@@ -26,7 +26,7 @@ A lightweight and scalable CRUD API built with TypeScript and Node.js, featuring
 1. Clone the repository:
 
    ```bash
-   git clone https://your-repository-url.git
+   git clone https://github.com/JuliaBel5/crud-api.git
    cd crud-api
    ```
 
@@ -75,10 +75,10 @@ User Routes:
 ### API Endpoints
 
 - **GET /api/users** - Retrieve all users.
-- **GET /api/users/:userId** - Retrieve a user by their ID.
+- **GET /api/users/userId** - Retrieve a user by their ID.
 - **POST /api/users** - Create a new user.
-- **PUT /api/users/:userId** - Update an existing user.
-- **DELETE /api/users/:userId** - Delete a user by their ID.
+- **PUT /api/users/userId** - Update an existing user.
+- **DELETE /api/users/userId** - Delete a user by their ID.
 
 ### Response Codes
 

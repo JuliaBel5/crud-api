@@ -21,7 +21,6 @@ export const requestListener = async (
     if (parsedUrl.pathname === '/api/users' && method === 'GET') {
       res.writeHead(200, { 'Content-Type': 'application/json' });
       const users = await getAllUsers();
-      console.log('Полученный список пользователей:', users);
       res.end(JSON.stringify({ success: true, users }));
     } else if (
       method === 'GET' &&

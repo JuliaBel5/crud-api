@@ -35,7 +35,6 @@ export const getAllUsers = async () => {
   if (isMultiMode) {
     return await syncUsersWithMaster();
   }
-  console.log('Текущий список пользователей:', users, isMultiMode);
   return users;
 };
 

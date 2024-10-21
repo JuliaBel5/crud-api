@@ -11,7 +11,7 @@
     "start:prod": "cross-env NODE_ENV=production node dist/index.js",
     "start:multi": "cross-env NODE_ENV=production MULTI_MODE=true tsx src/cluster.ts",
     "lint": "eslint \"src/**/*.ts\"",
-     "format": "prettier --write \"src/**/*.ts\""
+    "format": "prettier --write \"src/**/*.ts\""
   },
   "keywords": [],
   "author": "",
