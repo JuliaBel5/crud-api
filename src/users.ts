@@ -34,20 +34,26 @@ const syncUsersWithMaster = () => {
 export const getAllUsers = async () => {
   if (isMultiMode) {
     return await syncUsersWithMaster();
-  } else {
-    console.log("Текущий список пользователей:", users);
-    return users;
   }
+  console.log("Текущий список пользователей:", users, isMultiMode);
+  return users;
 };
 
-export const getUserById = (id: string) => {
+export const getUserById = async (id: string) => {
   if (isMultiMode) {
-    return syncUsersWithMaster().then((syncedUsers) => {
-      console.log("Поиск пользователя по ID:", id);
-      return syncedUsers.find((user) => user.id === id);
-    });
+    const syncedUsers = await syncUsersWithMaster();
+    console.log("Поиск пользователя по ID:", id, syncedUsers);
+    const user = syncedUsers.find((user) => user.id === id);
+    if (!user) {
+      console.log("Пользователь с таким ID не найден:", id);
+    }
+    console.log("user found", user);
+    return user;
   }
   const user = users.find((user) => user.id === id);
+  if (!user) {
+    console.log("Пользователь с таким ID не найден:", id);
+  }
   return user;
 };
 
@@ -57,54 +63,70 @@ export const createUser = (
   hobbies: string[]
 ) => {
   const newUser = { id: uuidv4(), username, age, hobbies };
-  users.push(newUser);
-  console.log("Создан новый пользователь:", users);
 
   if (isMultiMode) {
     console.log("Отправка обновления пользователям...");
-    process.send?.({ action: "UPDATE_DB", payload: newUser });
+    process.send?.({ action: "USER_CREATED", payload: newUser });
   }
-
-  process.send?.({ action: "USER_CREATED", payload: newUser });
-
+  users.push(newUser);
+  console.log("Создан новый пользователь:", users);
   return newUser;
 };
 
-export const updateUser = (
+export const updateUser = async (
   id: string,
   username: string,
   age: number,
   hobbies: string[]
 ) => {
-  const userIndex = users.findIndex((user) => user.id === id);
+  let syncedUsers: User[];
+
+  if (isMultiMode) {
+    syncedUsers = await syncUsersWithMaster();
+  } else {
+    syncedUsers = users;
+  }
+
+  const userIndex = syncedUsers.findIndex((user) => user.id === id);
   if (userIndex === -1) {
     console.log("Пользователь не найден для обновления:", id);
     return null;
   }
 
-  users[userIndex] = { id, username, age, hobbies };
-  console.log("Обновлен пользователь:", users[userIndex]);
+  const updatedUser = { id, username, age, hobbies };
+  syncedUsers[userIndex] = updatedUser;
+  console.log("Обновлен пользователь:", updatedUser);
 
   if (isMultiMode) {
+    process.send?.({ action: "UPDATE_DB", payload: updatedUser });
     console.log("Отправка обновления пользователям...");
-    process.send?.({ action: "UPDATE_DB", payload: users[userIndex] });
   }
-  return users[userIndex];
+
+  return updatedUser;
 };
 
-export const deleteUser = (id: string) => {
-  const userIndex = users.findIndex((user) => user.id === id);
+export const deleteUser = async (id: string) => {
+  let syncedUsers: User[];
+
+  if (isMultiMode) {
+    syncedUsers = await syncUsersWithMaster();
+  } else {
+    syncedUsers = users;
+  }
+
+  const userIndex = syncedUsers.findIndex((user) => user.id === id);
   if (userIndex === -1) {
     console.log("Пользователь не найден для удаления:", id);
     return false;
   }
 
-  const deletedUser = users.splice(userIndex, 1)[0];
-  console.log("Удален пользователь:", deletedUser);
+  const deletedUser = syncedUsers.splice(userIndex, 1)[0];
+  console.log("Удалён пользователь:", deletedUser);
 
   if (isMultiMode) {
     console.log("Отправка уведомления о удалении пользователям...");
-    process.send?.({ action: "UPDATE_DB", payload: null });
+    process.send?.({ action: "DELETE_USER", payload: id });
   }
+
   return true;
 };

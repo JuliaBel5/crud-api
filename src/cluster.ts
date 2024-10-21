@@ -16,15 +16,14 @@ const PORT = parseInt(process.env.PORT || "4000", 10);
 const numCPUs = availableParallelism();
 let currentWorkerIndex = 0;
 
-const inMemoryDatabase: { [key: string]: User } = {};
-
-console.log("Изначальная база данных:", inMemoryDatabase);
+const inMemoryDatabase: Record<string, User> = {};
 
 interface WorkerMessage {
   action: string;
   payload?: any;
 }
 
+ 
 const broadcastToWorkers = (action: string, payload: any) => {
   console.log(
     `Отправляем сообщение воркерам: action=${action}, payload=`,
@@ -35,7 +34,7 @@ const broadcastToWorkers = (action: string, payload: any) => {
     worker?.send({ action, payload });
   });
 };
-
+ 
 const handleWorkerMessages = (worker: Worker) => {
   worker.on("message", (msg: WorkerMessage) => {
     const { action, payload } = msg;
@@ -49,13 +48,27 @@ const handleWorkerMessages = (worker: Worker) => {
         inMemoryDatabase[payload.id] = payload;
         broadcastToWorkers("DB_DATA", inMemoryDatabase);
         break;
+
+      case "UPDATE_DB":
+        console.log("Обновление базы данных:", payload);
+
+        inMemoryDatabase[payload.id] = {
+          ...inMemoryDatabase[payload.id],
+          ...payload,
+        };
+
+        broadcastToWorkers("DB_DATA", inMemoryDatabase);
+        break;
+      case "DELETE_USER":
+        console.log("Удаление пользователя:", payload);
+        delete inMemoryDatabase[payload];
+        broadcastToWorkers("DB_DATA", inMemoryDatabase);
+        break;
     }
   });
 };
 
 if (cluster.isPrimary) {
-  console.log(`Главный процесс ${process.pid} запущен`);
-
   for (let i = 0; i < numCPUs; i++) {
     const worker = cluster.fork();
     handleWorkerMessages(worker);
@@ -124,18 +137,30 @@ if (cluster.isPrimary) {
     const { action, payload } = msg;
 
     if (action === "DB_DATA") {
-      console.log(
-        `Воркер ${process.pid} получил обновление базы данных:`,
-        payload
-      );
       Object.assign(inMemoryDatabase, payload);
-    } else if (action === "UPDATE_DB") {
-      if (payload) {
+    }
+
+    if (action === "UPDATE_DB") {
+      if (payload && payload.id) {
+        console.log(`Updating user in memory: ${payload.id}`);
         inMemoryDatabase[payload.id] = payload;
-        console.log(
-          `Воркер ${process.pid} обновил данные пользователя с id=${payload.id}`
-        );
-        process.send?.({ action: "UPDATE_DB", payload });
+        console.log(`Worker ${process.pid} updated user ${payload.id}`);
+
+        broadcastToWorkers("DB_DATA", inMemoryDatabase);
+      } else {
+        console.error("No valid payload received for update.");
+      }
+    }
+
+    if (action === "DELETE_USER") {
+      if (payload) {
+        console.log(`Deleting user in memory: ${payload}`);
+        delete inMemoryDatabase[payload];
+        console.log(`Worker ${process.pid} deleted user ${payload}`);
+
+        broadcastToWorkers("DB_DATA", inMemoryDatabase);
+      } else {
+        console.error("No valid payload received for deletion.");
       }
     }
   });

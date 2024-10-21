@@ -32,7 +32,7 @@ export const requestListener = async (
         return;
       }
 
-      const user = getUserById(userId!);
+      const user = await getUserById(userId!);
       if (!user) {
         handleErrors(res, 404, "User not found");
         return;
@@ -71,10 +71,10 @@ export const requestListener = async (
       req.on("data", (chunk) => {
         body += chunk.toString();
       });
-      req.on("end", () => {
+      req.on("end", async () => {
         try {
           const { username, age, hobbies } = JSON.parse(body);
-          const updatedUser = updateUser(userId!, username, age, hobbies);
+          const updatedUser = await updateUser(userId!, username, age, hobbies);
           if (!updatedUser) {
             handleErrors(res, 404, "User not found");
             return;
@@ -94,13 +94,13 @@ export const requestListener = async (
         return;
       }
 
-      const isDeleted = deleteUser(userId!);
+      const isDeleted = await deleteUser(userId!);
       if (!isDeleted) {
         handleErrors(res, 404, "User not found");
         return;
       }
       res.writeHead(204);
-      res.end();
+      res.end(JSON.stringify({ message: "User deleted successfully" }));
     } else if (parsedUrl.pathname === "/api/error" && method === "GET") {
       throw new Error("This is a forced error for testing purposes.");
     } else {
