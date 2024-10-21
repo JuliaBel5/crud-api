@@ -4,12 +4,12 @@
   "description": "",
   "main": "server.ts",
   "type": "module",
-  "scripts": {
+   "scripts": {
     "test": "jest",
     "build": "tsc",
     "start:dev": "cross-env NODE_ENV=development tsx src/server.ts",
     "start:prod": "cross-env NODE_ENV=production node dist/index.js",
-    "start:multi": "cross-env NODE_ENV=production MULTI_MODE=true tsx src/cluster.ts",
+    "start:multi": "cross-env NODE_ENV=development MULTI_MODE=true tsx src/cluster.ts",
     "lint": "eslint \"src/**/*.ts\"",
     "format": "prettier --write \"src/**/*.ts\""
   },
@@ -35,9 +35,11 @@
     "supertest": "^7.0.0",
     "ts-jest": "^29.2.5",
     "ts-node": "^10.9.2",
-    "ts-node-dev": "^2.0.0",
-    "tsx": "^4.19.1",
     "typescript": "^5.6.3",
     "uuid": "^10.0.0"
+  },
+  "dependencies": {
+    "ts-node-dev": "^2.0.0",
+    "tsx": "^4.19.1"
   }
 }

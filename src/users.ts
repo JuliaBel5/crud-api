@@ -53,6 +53,7 @@ export const getUserById = async (id: string) => {
   if (!user) {
     console.log('Пользователь с таким ID не найден:', id);
   }
+  console.log('Пользоветель найден', user);
   return user;
 };
 
@@ -68,7 +69,7 @@ export const createUser = (
     process.send?.({ action: 'USER_CREATED', payload: newUser });
   }
   users.push(newUser);
-  console.log('Создан новый пользователь:', users);
+  console.log('Создан новый пользователь:', newUser);
   return newUser;
 };
 

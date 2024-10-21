@@ -1,5 +1,5 @@
-import cluster, { Worker } from 'node:cluster';
-import { availableParallelism } from 'node:os';
+import cluster, { Worker } from 'cluster';
+import { availableParallelism } from 'os';
 import {
   createServer,
   IncomingMessage,

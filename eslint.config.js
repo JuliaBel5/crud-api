@@ -1,28 +1,28 @@
-import typescriptPlugin from "@typescript-eslint/eslint-plugin";
-import typescriptParser from "@typescript-eslint/parser";
+import typescriptPlugin from '@typescript-eslint/eslint-plugin';
+import typescriptParser from '@typescript-eslint/parser';
 
 export default [
   {
-    files: ["**/*.ts"],
+    files: ['**/*.ts'],
     languageOptions: {
       parser: typescriptParser,
       parserOptions: {
         ecmaVersion: 2020,
-        sourceType: "module",
+        sourceType: 'module',
       },
     },
     rules: {
-      "@typescript-eslint/no-unused-vars": "warn",
+      '@typescript-eslint/no-unused-vars': 'warn',
     },
     plugins: {
-      "@typescript-eslint": typescriptPlugin,
+      '@typescript-eslint': typescriptPlugin,
     },
   },
   {
-    files: ["**/*.js"],
+    files: ['**/*.ts'],
     languageOptions: {
       ecmaVersion: 2020,
-      sourceType: "module",
+      sourceType: 'module',
     },
   },
 ];
