@@ -2,14 +2,13 @@
   "name": "crud-api",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
   "type": "module",
-   "scripts": {
+  "scripts": {
     "test": "jest",
-    "build": "tsc",
-    "start:dev": "cross-env NODE_ENV=development tsx src/server.ts",
-    "start:prod": "npm run build && tsx dist/server.js",
-    "start:multi": "cross-env NODE_ENV=development MULTI_MODE=true tsx src/cluster.ts",
+    "build": "webpack --config webpack.config.server.mjs",
+    "start:dev": "cross-env NODE_ENV=development webpack --config webpack.config.server.mjs && node dist/server.js",
+    "start:prod": "npm run build && cross-env NODE_ENV=production node dist/server.js",
+    "start:multi": "webpack --config webpack.config.multi.mjs && cross-env NODE_ENV=development MULTI_MODE=true node dist/bundle.js",
     "lint": "eslint \"src/**/*.ts\"",
     "format": "prettier --write \"src/**/*.ts\""
   },
@@ -34,12 +33,14 @@
     "prettier": "^3.3.3",
     "supertest": "^7.0.0",
     "ts-jest": "^29.2.5",
+    "ts-loader": "^9.5.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.6.3",
-    "uuid": "^10.0.0"
+    "uuid": "^10.0.0",
+    "webpack": "^5.95.0",
+    "webpack-cli": "^5.1.4"
   },
   "dependencies": {
-    "ts-node-dev": "^2.0.0",
-    "tsx": "^4.19.1"
+    "ts-node-dev": "^2.0.0"
   }
 }
