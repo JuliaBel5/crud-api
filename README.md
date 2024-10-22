@@ -101,7 +101,7 @@ User Routes:
 
 - **Node.js** - JavaScript runtime used for building the API.
 - **TypeScript** - Provides type safety and modern JavaScript features.
-- **TSX** - For handling TypeScript files in development.
+- **Webpack** - For handling TypeScript files in development.
 - **Jest** - Testing framework for running unit tests.
 - **Supertest** - HTTP assertions for testing API endpoints.
 - **ESLint & Prettier** - Linting and code formatting tools for maintaining code quality.
